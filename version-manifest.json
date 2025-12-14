@@ -1,0 +1,10 @@
+{
+  "currentVersion": "2.1.0",
+  "minimumRequiredVersion": "2.0.0",
+  "releaseDate": "2024-12-13",
+  "changelog": "Amélioration des notifications, correction des communiqués, optimisation des performances",
+  "updateUrl": "./",
+  "mandatory": false,
+  "checksum": "abc123def456",
+  "forceUpdate": false
+}
