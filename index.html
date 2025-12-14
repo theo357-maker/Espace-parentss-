@@ -17,6 +17,10 @@
   <meta name="msapplication-tap-highlight" content="no">
   <meta name="theme-color" content="#3498db">
 
+<!-- Service Worker et mise à jour -->
+<meta name="version" content="2.1.0">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
   <!-- Apple Touch Icons -->
   <link rel="apple-touch-icon" href="icon-192x192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
@@ -30,6 +34,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script src="update-system.js"></script>
+
+
+
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -110,6 +119,57 @@
         .sidebar.collapsed { transform: translateX(-100%); }
         .nav-menu { list-style: none; padding: 1rem 0; margin: 0; }
         .nav-menu li a { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: var(--dark); text-decoration: none; font-weight: 500; }
+
+
+
+/* Styles pour les notifications de mise à jour */
+.update-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border-left: 4px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  padding: 15px 20px;
+  min-width: 300px;
+  max-width: 400px;
+  z-index: 9999;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+}
+
+.update-toast.show {
+  transform: translateX(0);
+}
+
+.update-toast.success {
+  border-left-color: #27ae60;
+}
+
+.update-toast.warning {
+  border-left-color: #f39c12;
+}
+
+.update-toast.danger {
+  border-left-color: #e74c3c;
+}
+
+.update-toast.info {
+  border-left-color: #3498db;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.update-available {
+  animation: pulse 2s infinite;
+}
+
+
         .nav-menu li a.active, .nav-menu li a:hover { background: #eaf5fc; color: var(--primary); }
         .nav-submenu { list-style: none; padding-left: 2rem; }
         .nav-submenu li a { padding: 10px 20px; font-size: 0.9rem; }
@@ -6084,5 +6144,69 @@
                         }
                     });
                    </script>
+<!-- Scripts de mise à jour -->
+
+
+<script>
+// Initialisation immédiate
+(function() {
+  // Vérifier si Service Worker est supporté
+  if ('serviceWorker' in navigator) {
+    // Enregistrer le Service Worker immédiatement
+    window.addEventListener('load', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js');
+        console.log('✅ Service Worker enregistré avec succès');
+        
+        // Vérifier les mises à jour toutes les 15 minutes
+        setInterval(() => {
+          registration.update();
+        }, 15 * 60 * 1000);
+        
+        // Vérifier maintenant
+        setTimeout(() => {
+          registration.update();
+        }, 10000);
+        
+      } catch (error) {
+        console.error('❌ Erreur Service Worker:', error);
+      }
+    });
+  }
+  
+  // Afficher la version dans la console
+  console.log('%c🚀 CS La Colombe - Espace Parent', 'color: #3498db; font-size: 16px; font-weight: bold;');
+  console.log('%cSystème de mise à jour en temps réel activé', 'color: #2ecc71;');
+  
+})();
+
+// Fonctions utilitaires
+window.reloadApp = function() {
+  window.location.reload();
+};
+
+window.clearAppCache = function() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister();
+      });
+    });
+  }
+  
+  caches.keys().then(cacheNames => {
+    cacheNames.forEach(cacheName => {
+      caches.delete(cacheName);
+    });
+  });
+  
+  localStorage.clear();
+  sessionStorage.clear();
+  
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+};
+</script>
 </body>
 </html>
