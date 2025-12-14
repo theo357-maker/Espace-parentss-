@@ -8544,7 +8544,313 @@ debugBtn.onclick = debugNotifications;
 document.body.appendChild(debugBtn);
 </script>
 
+<script>
+// === SCRIPT DE GESTION DES NOTIFICATIONS ET SERVICE WORKER ===
 
+// Initialiser le Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      // Enregistrer le Service Worker principal
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none'
+      });
+      
+      console.log('✅ Service Worker enregistré:', registration.scope);
+      
+      // Vérifier les mises à jour
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        console.log('🔄 Nouveau Service Worker trouvé');
+        
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('🔄 Nouvelle version disponible');
+            showUpdateNotification();
+          }
+        });
+      });
+      
+      // Vérifier l'état
+      if (registration.waiting) {
+        console.log('⏳ Service Worker en attente');
+        showUpdateNotification();
+      }
+      
+      if (registration.active) {
+        console.log('✅ Service Worker actif');
+      }
+      
+      // Écouter les messages du Service Worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        console.log('📩 Message du Service Worker:', event.data);
+        
+        switch (event.data.type) {
+          case 'NEW_NOTIFICATION':
+            console.log('🔔 Nouvelle notification reçue');
+            incrementNotificationCount();
+            break;
+            
+          case 'NOTIFICATION_CLICKED':
+            const { page, childId } = event.data;
+            navigateToPage(page, childId);
+            break;
+            
+          case 'UPDATE_AVAILABLE':
+            showUpdateNotification();
+            break;
+        }
+      });
+      
+      // Envoyer un message au Service Worker
+      registration.active?.postMessage({
+        type: 'APP_LOADED',
+        version: '2.1.0'
+      });
+      
+    } catch (error) {
+      console.error('❌ Erreur Service Worker:', error);
+    }
+  });
+}
+
+// Afficher une notification de mise à jour
+function showUpdateNotification() {
+  const toast = document.createElement('div');
+  toast.className = 'notification-toast info';
+  toast.innerHTML = `
+    <div class="notification-header">
+      <div class="notification-title">
+        <i class="fas fa-sync-alt"></i> Mise à jour disponible
+      </div>
+      <button class="notification-close">&times;</button>
+    </div>
+    <div class="notification-body">
+      <p>Une nouvelle version de l'application est disponible.</p>
+      <p>Voulez-vous recharger pour profiter des dernières fonctionnalités ?</p>
+      <div class="notification-actions">
+        <button class="btn btn-primary btn-sm" id="reload-app-btn">
+          <i class="fas fa-redo"></i> Recharger
+        </button>
+        <button class="btn btn-secondary btn-sm" id="later-btn">
+          Plus tard
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 100);
+  
+  // Gestionnaires
+  document.getElementById('reload-app-btn').addEventListener('click', () => {
+    window.location.reload();
+  });
+  
+  document.getElementById('later-btn').addEventListener('click', () => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  });
+  
+  toast.querySelector('.notification-close').addEventListener('click', () => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  });
+}
+
+// Navigation depuis les notifications
+function navigateToPage(page, childId = '') {
+  console.log(`Naviguer vers ${page}`, childId ? `(enfant: ${childId})` : '');
+  
+  const link = document.querySelector(`.nav-menu a[data-page="${page}"]`);
+  if (link) {
+    // Activer le lien
+    document.querySelectorAll('.nav-menu a, .page').forEach(el => el.classList.remove('active'));
+    link.classList.add('active');
+    document.getElementById(`${page}-page`).classList.add('active');
+    document.getElementById('page-title').textContent = link.textContent;
+    
+    // Sélectionner l'enfant si spécifié
+    if (childId) {
+      setTimeout(() => {
+        let selector;
+        switch(page) {
+          case 'grades':
+            selector = document.getElementById('secondary-grades-child-selector');
+            break;
+          case 'presence-incidents':
+            selector = document.getElementById('presence-child-selector');
+            break;
+          case 'homework':
+            selector = document.getElementById('secondary-homework-child-selector');
+            break;
+          case 'communiques':
+            selector = document.getElementById('communique-child-selector');
+            break;
+          case 'dashboard':
+            selector = document.getElementById('child-selector');
+            break;
+        }
+        
+        if (selector && selector.value !== childId) {
+          selector.value = childId;
+          selector.dispatchEvent(new Event('change'));
+        }
+      }, 1000);
+    }
+  }
+}
+
+// Incrémenter le compteur de notifications
+function incrementNotificationCount() {
+  const counter = document.getElementById('notification-count');
+  if (!counter) return;
+  
+  let count = parseInt(counter.textContent) || 0;
+  count++;
+  
+  counter.textContent = count;
+  counter.classList.remove('hidden');
+  
+  // Mettre à jour le badge
+  updateAppBadge(count);
+  
+  // Animer la cloche
+  const bell = document.getElementById('notification-bell');
+  if (bell) {
+    bell.style.animation = 'pulse 1.5s infinite';
+  }
+  
+  console.log(`🔔 Notification reçue. Total: ${count}`);
+}
+
+// Mettre à jour le badge de l'application
+function updateAppBadge(count) {
+  // Badge API
+  if ('setAppBadge' in navigator) {
+    navigator.setAppBadge(count).catch(error => {
+      console.log('Badge API ignorée:', error);
+    });
+  }
+  
+  // Pour le titre
+  document.title = count > 0 
+    ? `(${count}) Espace Parent - CS la Colombe`
+    : 'Espace Parent - CS la Colombe';
+}
+
+// Réinitialiser le compteur
+function resetNotificationCount() {
+  const counter = document.getElementById('notification-count');
+  if (counter) {
+    counter.textContent = '0';
+    counter.classList.add('hidden');
+  }
+  
+  const bell = document.getElementById('notification-bell');
+  if (bell) {
+    bell.style.animation = '';
+  }
+  
+  updateAppBadge(0);
+}
+
+// Vérifier les permissions
+function checkNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('❌ Navigateur ne supporte pas les notifications');
+    return false;
+  }
+  
+  const permission = Notification.permission;
+  console.log(`Permission: ${permission}`);
+  
+  if (permission === 'granted') {
+    return true;
+  } else if (permission === 'denied') {
+    console.log('❌ Notifications bloquées');
+    return false;
+  }
+  
+  return null;
+}
+
+// Fonction de débogage
+window.debugServiceWorker = async function() {
+  console.clear();
+  console.log('=== DÉBOGAGE SERVICE WORKER ===');
+  
+  // Vérifier Service Worker
+  if ('serviceWorker' in navigator) {
+    const registration = await navigator.serviceWorker.getRegistration();
+    console.log('Service Worker:', registration ? '✅ Enregistré' : '❌ Non enregistré');
+    
+    if (registration) {
+      console.log('Scope:', registration.scope);
+      console.log('État:', registration.active?.state);
+      
+      // Vérifier les workers
+      if (registration.installing) {
+        console.log('Installing:', registration.installing.state);
+      }
+      if (registration.waiting) {
+        console.log('Waiting:', registration.waiting.state);
+      }
+      if (registration.active) {
+        console.log('Active:', registration.active.state);
+      }
+    }
+  } else {
+    console.log('❌ Service Worker non supporté');
+  }
+  
+  // Vérifier notifications
+  console.log('Notifications:', Notification.permission);
+  console.log('Push Manager:', 'PushManager' in window ? '✅ Supporté' : '❌ Non supporté');
+  
+  // Tester une notification locale
+  if (Notification.permission === 'granted') {
+    new Notification('Test Service Worker', {
+      body: 'Ceci est un test',
+      icon: '/icon-192x192.png'
+    });
+    console.log('✅ Notification test envoyée');
+  }
+  
+  console.log('=== FIN DÉBOGAGE ===');
+};
+
+// Écouter les messages de firebase-messaging-sw.js
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data.type === 'FIREBASE_BACKGROUND_MESSAGE') {
+      console.log('📨 Message Firebase:', event.data.payload);
+      incrementNotificationCount();
+    }
+  });
+}
+
+// Script de test (optionnel)
+const debugButton = document.createElement('button');
+debugButton.innerHTML = '🐛 Debug SW';
+debugButton.style.cssText = `
+  position: fixed;
+  bottom: 60px;
+  left: 10px;
+  z-index: 9999;
+  padding: 8px 12px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+`;
+debugButton.onclick = debugServiceWorker;
+document.body.appendChild(debugButton);
+</script>
 
 
 </body>
