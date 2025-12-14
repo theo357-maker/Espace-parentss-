@@ -1,49 +1,61 @@
 {
   "name": "Espace Parent - CS La Colombe",
-  "short_name": "Espace Parent",
-  "description": "Portail parent pour suivre la scolarité de vos enfants",
-  "start_url": "index.html",
+  "short_name": "CS La Colombe",
+  "description": "Application de suivi scolaire pour les parents",
+  "start_url": "/parent.html",
   "display": "standalone",
   "background_color": "#3498db",
   "theme_color": "#3498db",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "scope": "/",
   "lang": "fr",
-  "categories": ["education", "productivity"],
+  "dir": "ltr",
   
   "icons": [
     {
-      "src": "icon-72x72.png",
+      "src": "/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-96x96.png",
+      "src": "/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-128x128.png",
+      "src": "/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-144x144.png",
+      "src": "/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-192x192.png",
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -52,55 +64,69 @@
   
   "screenshots": [
     {
-      "src": "screenshot1.png",
-      "sizes": "1280x720",
+      "src": "/screenshot1.png",
+      "sizes": "1080x1920",
       "type": "image/png",
-      "form_factor": "wide",
+      "form_factor": "narrow",
       "label": "Tableau de bord"
     },
     {
-      "src": "screenshot2.png",
-      "sizes": "750x1334",
+      "src": "/screenshot2.png",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Gestion des notes"
+      "label": "Notes et cotes"
     }
   ],
+  
+  "categories": ["education", "productivity"],
   
   "shortcuts": [
     {
       "name": "Tableau de bord",
       "short_name": "Dashboard",
       "description": "Accéder au tableau de bord",
-      "url": "index.html#dashboard",
-      "icons": [{ "src": "icon-96x96.png", "sizes": "96x96" }]
+      "url": "/parent.html#dashboard",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Notes",
+      "name": "Mes notes",
       "short_name": "Notes",
       "description": "Consulter les notes",
-      "url": "index.html#grades",
-      "icons": [{ "src": "icon-96x96.png", "sizes": "96x96" }]
-    },
+      "url": "/parent.html#grades",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "protocol_handlers": [
     {
-      "name": "Paiements",
-      "short_name": "Paiements",
-      "description": "Gérer les paiements",
-      "url": "index.html#payments",
-      "icons": [{ "src": "icon-96x96.png", "sizes": "96x96" }]
+      "protocol": "web+cslacolombe",
+      "url": "/parent.html?url=%s"
     }
   ],
   
   "related_applications": [],
   "prefer_related_applications": false,
   
-  "protocol_handlers": [
-    {
-      "protocol": "web+colombe",
-      "url": "pindex.html?url=%s"
+  "share_target": {
+    "action": "/parent.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
     }
-  ],
-  
-  "gcm_sender_id": "269629842962",
-  "gcm_user_visible_only": true
-} 
+  }
+}
