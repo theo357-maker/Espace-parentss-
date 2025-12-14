@@ -783,6 +783,73 @@ if ('periodicSync' in self.registration) {
   }
 }
 
+self.addEventListener('install', (event) => {
+    console.log('Service Worker installé');
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+    console.log('Service Worker activé');
+    event.waitUntil(clients.claim());
+});
+
+self.addEventListener('push', (event) => {
+    console.log('Push reçu:', event);
+    
+    const data = event.data?.json() || {};
+    const title = data.notification?.title || 'Nouvelle notification';
+    const options = {
+        body: data.notification?.body || 'Vous avez une nouvelle notification',
+        icon: '/icon-192x192.png',
+        badge: '/icon-72x72.png',
+        data: data.data || {},
+        vibrate: [200, 100, 200],
+        actions: [
+            { action: 'open', title: 'Ouvrir' },
+            { action: 'close', title: 'Fermer' }
+        ]
+    };
+    
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    console.log('Notification cliquée:', event.notification.data);
+    
+    event.notification.close();
+    
+    const data = event.notification.data;
+    
+    if (event.action === 'open' || event.action === '') {
+        event.waitUntil(
+            clients.matchAll({ type: 'window', includeUncontrolled: true })
+                .then((clientList) => {
+                    for (const client of clientList) {
+                        if (client.url === self.location.origin && 'focus' in client) {
+                            return client.focus();
+                        }
+                    }
+                    return clients.openWindow('/');
+                })
+                .then((client) => {
+                    if (client && data.page) {
+                        client.postMessage({
+                            type: 'NOTIFICATION_CLICK',
+                            page: data.page,
+                            data: data
+                        });
+                    }
+                })
+        );
+    }
+});
+
+self.addEventListener('message', (event) => {
+    console.log('Message reçu dans SW:', event.data);
+});
+
 // ==================== JOURNAL DE DÉBOGAGE ====================
 // Enregistrer tous les événements pour débogage
 self.addEventListener('error', (event) => {
