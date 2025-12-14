@@ -354,4 +354,122 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
+// ==================== FIREBASE MESSAGING DANS LE SERVICE WORKER ====================
+
+// 🔥 IMPORTANT : Même configuration que dans parent.html
+const firebaseConfig = {
+    apiKey: "AIzaSyBn7VIddclO7KtrXb5sibCr9SjVLjOy-qI",
+    authDomain: "theo1d.firebaseapp.com",
+    projectId: "theo1d",
+    storageBucket: "theo1d.firebasestorage.app",
+    messagingSenderId: "269629842962",
+    appId: "1:269629842962:web:a80a12b04448fe1e595acb",
+    measurementId: "G-TNSG1XFMDZ"
+};
+
+// ⚙️ Initialiser Firebase dans le Service Worker
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js');
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
+// 📨 Gestion des messages en arrière-plan (QUAND L'APP EST FERMÉE)
+messaging.onBackgroundMessage((payload) => {
+    console.log('[SW] 📨 Message reçu en arrière-plan:', payload);
+
+    const notificationTitle = payload.notification?.title || 'CS La Colombe';
+    const notificationOptions = {
+        body: payload.notification?.body || 'Nouvelle notification',
+        icon: './icon-192x192.png',
+        badge: './icon-72x72.png',
+        data: payload.data || {}, // Transmettre les données (ID enfant, type, etc.)
+        tag: payload.data?.type || 'general',
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        actions: [
+            {
+                action: 'open',
+                title: 'Ouvrir',
+                icon: './icon-72x72.png'
+            }
+        ]
+    };
+
+    // 1. Afficher la notification système
+    self.registration.showNotification(notificationTitle, notificationOptions)
+        .then(() => {
+            console.log('[SW] ✅ Notification affichée depuis SW');
+
+            // 2. Mettre à jour le badge de l'app
+            updateBadgeFromBackground(payload);
+        })
+        .catch(err => {
+            console.error('[SW] ❌ Erreur affichage notification:', err);
+        });
+});
+
+// 🏷️ Fonction pour mettre à jour le badge depuis le Service Worker
+function updateBadgeFromBackground(payload) {
+    // Vérifier si l'API Badging est supportée
+    if (typeof navigator !== 'undefined' && navigator.setAppBadge) {
+        console.log('[SW] 🔔 Mise à jour badge depuis background');
+
+        // Récupérer le compte depuis les données de la notification
+        const badgeCount = payload.data?.badgeCount || 1;
+
+        // Mettre à jour le badge
+        navigator.setAppBadge(badgeCount).catch(error => {
+            console.error('[SW] ❌ Erreur mise à jour badge:', error);
+        });
+    }
+}
+
+// 🎯 Gestion du clic sur la notification
+self.addEventListener('notificationclick', (event) => {
+    console.log('[SW] 🖱️ Notification cliquée:', event.notification.data);
+
+    event.notification.close();
+
+    const data = event.notification.data;
+    let urlToOpen = './index.html';
+
+    // Navigation basée sur le type de notification
+    if (data.page) {
+        urlToOpen = `./index.html#${data.page}`;
+        
+        // Si un enfant est spécifié, ajouter le paramètre
+        if (data.childId) {
+            urlToOpen += `?child=${data.childId}`;
+        }
+    }
+
+    event.waitUntil(
+        self.clients.matchAll({
+            type: 'window',
+            includeUncontrolled: true
+        }).then((clientList) => {
+            // Focus sur un client existant
+            for (const client of clientList) {
+                if (client.url.includes(self.location.origin) && 'focus' in client) {
+                    console.log('[SW] 🔍 Client existant trouvé, focus...');
+                    return client.focus().then(() => {
+                        // Envoyer les données à la page
+                        client.postMessage({
+                            type: 'NOTIFICATION_CLICKED',
+                            data: data
+                        });
+                    });
+                }
+            }
+
+            // Ouvrir une nouvelle fenêtre si aucun client existant
+            if (self.clients.openWindow) {
+                console.log('[SW] 🪟 Ouverture nouvelle fenêtre:', urlToOpen);
+                return self.clients.openWindow(urlToOpen);
+            }
+        })
+    );
+});
+
 console.log('[SW] 📡 Service Worker chargé - Prêt pour les mises à jour en temps réel');
