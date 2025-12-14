@@ -3076,39 +3076,7 @@ function updateAppBadge(count) {
     }
 }
 
-<script>
-// 🔔 Fonction pour mettre à jour le badge (depuis la page principale)
-async function updateAppBadgeFromPage(count) {
-    // Vérifier si l'API est supportée
-    if ('setAppBadge' in navigator) {
-        try {
-            if (count > 0) {
-                await navigator.setAppBadge(count);
-                console.log(`✅ Badge mis à jour: ${count}`);
-            } else {
-                await navigator.clearAppBadge();
-                console.log('✅ Badge effacé');
-            }
-        } catch (error) {
-            console.error('❌ Erreur badge:', error);
-        }
-    } else {
-        console.log('⚠️ API Badge non supportée');
-    }
-}
 
-// 🔄 Appelez cette fonction quand vous recevez une notification
-// Exemple dans votre fonction setupRealTimeNotificationsOptimized :
-function showLocalNotification(title, body, data = {}) {
-    // ... votre code existant ...
-
-    // Mettre à jour le badge
-    const newCount = (notificationCounts.total || 0) + 1;
-    updateAppBadgeFromPage(newCount);
-
-    // ... reste du code ...
-}
-</script>
 // Fonction pour initialiser les notifications périodiques
 function initializePeriodicNotifications() {
     // Vérifier toutes les 30 minutes
@@ -7574,6 +7542,113 @@ window.clearAppCache = function() {
     window.location.reload();
   }, 1000);
 };
+</script>
+<script>
+// 🔔 Fonction pour mettre à jour le badge (depuis la page principale)
+async function updateAppBadgeFromPage(count) {
+    // Vérifier si l'API est supportée
+    if ('setAppBadge' in navigator) {
+        try {
+            if (count > 0) {
+                await navigator.setAppBadge(count);
+                console.log(`✅ Badge mis à jour: ${count}`);
+            } else {
+                await navigator.clearAppBadge();
+                console.log('✅ Badge effacé');
+            }
+        } catch (error) {
+            console.error('❌ Erreur badge:', error);
+        }
+    } else {
+        console.log('⚠️ API Badge non supportée');
+    }
+}
+
+// 🔄 Appelez cette fonction quand vous recevez une notification
+// Exemple dans votre fonction setupRealTimeNotificationsOptimized :
+function showLocalNotification(title, body, data = {}) {
+    // ... votre code existant ...
+
+    // Mettre à jour le badge
+    const newCount = (notificationCounts.total || 0) + 1;
+    updateAppBadgeFromPage(newCount);
+
+    // ... reste du code ...
+}
+</script>
+<script>
+
+// 🔔 Fonction pour communiquer avec le Service Worker
+async function communicateWithServiceWorker() {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    // Vérifier si le SW est prêt
+    const response = await new Promise(resolve => {
+      const messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = (event) => {
+        resolve(event.data);
+      };
+      
+      navigator.serviceWorker.controller.postMessage(
+        { type: 'PING' },
+        [messageChannel.port2]
+      );
+    });
+    
+    console.log('Service Worker réponse:', response);
+    return response;
+  }
+  return null;
+}
+
+// 🏷️ Mettre à jour le badge depuis la page
+async function updateBadge(count) {
+  if ('setAppBadge' in navigator) {
+    try {
+      if (count > 0) {
+        await navigator.setAppBadge(count);
+        console.log(`✅ Badge mis à jour: ${count}`);
+        
+        // Informer aussi le Service Worker
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'SET_BADGE_COUNT',
+            data: { count }
+          });
+        }
+      } else {
+        await navigator.clearAppBadge();
+        console.log('✅ Badge effacé');
+      }
+    } catch (error) {
+      console.error('❌ Erreur badge:', error);
+    }
+  }
+}
+
+// 📨 Écouter les messages du Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    const { type, data } = event.data || {};
+    
+    switch (type) {
+      case 'BACKGROUND_NOTIFICATION':
+        // Une notification a été reçue en arrière-plan
+        console.log('Notification reçue du SW:', data);
+        updateNotificationCount(1);
+        break;
+        
+      case 'SERVICE_WORKER_ACTIVE':
+        console.log(`✅ Service Worker actif (v${data.version})`);
+        break;
+    }
+  });
+}
+
+// Appeler cette fonction au chargement
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(communicateWithServiceWorker, 3000);
+});
+
 </script>
 </body>
 </html>   
