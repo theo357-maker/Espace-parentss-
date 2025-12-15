@@ -1,66 +1,53 @@
-// sw.js - Service Worker Principal pour PWA et Notifications
-
-const CACHE_NAME = 'cs-lacolombe-v2.1.0';
+// sw.js - Service Worker optimisé pour PWA et Notifications
+const CACHE_NAME = 'cs-lacolombe-v2.2.0';
 const urlsToCache = [
   '/',
-  '/index.html',
   '/parent.html',
   '/manifest.json',
   '/icon-72x72.png',
-  '/icon-96x96.png',
-  '/icon-128x128.png',
-  '/icon-144x144.png',
-  '/icon-152x152.png',
   '/icon-192x192.png',
-  '/icon-384x384.png',
   '/icon-512x512.png',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
-// Installation du Service Worker
+// === INSTALLATION ===
 self.addEventListener('install', (event) => {
-  console.log('🛠️ Service Worker: Installation');
+  console.log('🛠️ Service Worker: Installation v2.2.0');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('📦 Mise en cache des fichiers');
+        console.log('📦 Mise en cache des fichiers critiques');
         return cache.addAll(urlsToCache);
       })
-      .then(() => {
-        console.log('✅ Cache installé avec succès');
-        return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('❌ Erreur installation cache:', error);
-      })
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activation du Service Worker
+// === ACTIVATION ===
 self.addEventListener('activate', (event) => {
   console.log('🎯 Service Worker: Activation');
   
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log(`🗑️ Suppression ancien cache: ${cacheName}`);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .then(() => {
-      console.log('✅ Nouveau Service Worker activé');
-      return self.clients.claim();
-    })
+    Promise.all([
+      // Nettoyer les anciens caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log(`🗑️ Suppression ancien cache: ${cacheName}`);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Prendre le contrôle immédiatement
+      self.clients.claim()
+    ])
   );
 });
 
-// Stratégie de cache: Network First avec fallback
+// === STRATÉGIE DE CACHE ===
 self.addEventListener('fetch', (event) => {
   // Ignorer les requêtes Firebase et Cloudinary
   if (event.request.url.includes('firebase') || 
@@ -69,7 +56,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Pour les pages HTML, toujours aller au réseau d'abord
+  // Pour les pages HTML : Network First
   if (event.request.headers.get('accept').includes('text/html')) {
     event.respondWith(
       fetch(event.request)
@@ -88,15 +75,15 @@ self.addEventListener('fetch', (event) => {
               if (cachedResponse) {
                 return cachedResponse;
               }
-              // Fallback à la page d'accueil
-              return caches.match('/');
+              // Fallback à la page parent
+              return caches.match('/parent.html');
             });
         })
     );
     return;
   }
   
-  // Pour les autres ressources, cache d'abord
+  // Pour les autres ressources : Cache First
   event.respondWith(
     caches.match(event.request)
       .then((cachedResponse) => {
@@ -107,47 +94,36 @@ self.addEventListener('fetch', (event) => {
         return fetch(event.request)
           .then((response) => {
             // Ne pas mettre en cache les requêtes non GET
-            if (event.request.method !== 'GET') {
-              return response;
-            }
+            if (event.request.method !== 'GET') return response;
             
             // Mettre en cache les ressources statiques
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseClone);
             });
-            
             return response;
-          })
-          .catch((error) => {
-            console.error('Fetch échoué:', error);
-            // Pour les images, retourner une image de fallback
-            if (event.request.destination === 'image') {
-              return caches.match('/icon-192x192.png');
-            }
           });
       })
   );
 });
 
-// Gérer les messages push
+// === GESTION DES NOTIFICATIONS PUSH ===
 self.addEventListener('push', (event) => {
-  console.log('📨 Service Worker: Push reçu', event);
+  console.log('📨 Push reçu:', event);
   
   let data = {};
-  if (event.data) {
-    try {
-      data = event.data.json();
-    } catch (e) {
-      data = {
-        title: 'Nouvelle notification',
-        body: event.data.text() || 'Vous avez une nouvelle notification'
-      };
-    }
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = {
+      title: 'CS La Colombe',
+      body: 'Nouvelle notification',
+      icon: '/icon-192x192.png'
+    };
   }
   
-  const title = data.notification?.title || data.title || 'CS La Colombe';
-  const body = data.notification?.body || data.body || 'Nouvelle notification';
+  const title = data.title || 'CS La Colombe';
+  const body = data.body || 'Nouvelle notification disponible';
   const icon = '/icon-192x192.png';
   const badge = '/icon-72x72.png';
   const dataPayload = data.data || {};
@@ -159,56 +135,34 @@ self.addEventListener('push', (event) => {
     vibrate: [200, 100, 200],
     data: dataPayload,
     requireInteraction: true,
-    actions: [
-      {
-        action: 'open',
-        title: '👁️ Voir'
-      },
-      {
-        action: 'close',
-        title: '❌ Fermer'
-      }
-    ],
     tag: dataPayload.type || 'general',
-    renotify: true
+    renotify: true,
+    actions: [
+      { action: 'view', title: '👁️ Voir' },
+      { action: 'dismiss', title: '❌ Fermer' }
+    ]
   };
   
   event.waitUntil(
     self.registration.showNotification(title, options)
-      .then(() => {
-        console.log('✅ Notification affichée');
-        
-        // Envoyer un message à tous les clients
-        self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => {
-            client.postMessage({
-              type: 'NEW_NOTIFICATION',
-              data: data
-            });
-          });
-        });
-      })
-      .catch((error) => {
-        console.error('❌ Erreur affichage notification:', error);
-      })
   );
 });
 
-// Gérer le clic sur les notifications
+// === CLIC SUR NOTIFICATION ===
 self.addEventListener('notificationclick', (event) => {
-  console.log('🔘 Service Worker: Notification cliquée', event.notification.data);
+  console.log('🔘 Notification cliquée:', event.notification.data);
   
   event.notification.close();
   
   const data = event.notification.data || {};
   const action = event.action;
   
-  if (action === 'close') {
+  if (action === 'dismiss') {
     console.log('Notification fermée');
     return;
   }
   
-  // Par défaut, ouvrir l'application
+  // Par défaut : ouvrir l'application
   event.waitUntil(
     self.clients.matchAll({
       type: 'window',
@@ -217,77 +171,38 @@ self.addEventListener('notificationclick', (event) => {
     .then((clientList) => {
       // Chercher un client ouvert
       for (const client of clientList) {
-        if (client.url === self.location.origin && 'focus' in client) {
-          console.log('✅ Client trouvé, focus...');
+        if (client.url.includes('/parent.html') && 'focus' in client) {
           client.focus();
-          
-          // Envoyer les données de notification
           client.postMessage({
             type: 'NOTIFICATION_CLICKED',
             data: data,
-            page: data.page || 'dashboard',
-            childId: data.childId || ''
+            page: data.page || 'dashboard'
           });
-          
           return;
         }
       }
       
-      // Si aucun client ouvert, ouvrir une nouvelle fenêtre
-      console.log('🌐 Ouverture nouvelle fenêtre...');
-      return self.clients.openWindow('/')
+      // Ouvrir une nouvelle fenêtre
+      return self.clients.openWindow('/parent.html')
         .then((newClient) => {
           if (newClient) {
-            // Attendre que la page soit chargée
+            // Envoyer les données après chargement
             setTimeout(() => {
               newClient.postMessage({
                 type: 'NOTIFICATION_CLICKED',
                 data: data,
-                page: data.page || 'dashboard',
-                childId: data.childId || ''
+                page: data.page || 'dashboard'
               });
             }, 1000);
           }
         });
     })
-    .catch((error) => {
-      console.error('❌ Erreur gestion notification:', error);
-    })
   );
 });
 
-// Gérer les messages des clients
-self.addEventListener('message', (event) => {
-  console.log('📩 Service Worker: Message reçu', event.data);
-  
-  const { type, data } = event.data || {};
-  
-  switch (type) {
-    case 'SKIP_WAITING':
-      self.skipWaiting();
-      break;
-      
-    case 'GET_VERSION':
-      event.ports[0].postMessage({ version: '2.1.0' });
-      break;
-      
-    case 'CLEAR_CACHE':
-      caches.delete(CACHE_NAME)
-        .then(() => {
-          event.source.postMessage({ type: 'CACHE_CLEARED' });
-        });
-      break;
-      
-    case 'UPDATE_AVAILABLE':
-      // Gérer les mises à jour
-      self.registration.update();
-      break;
-  }
-});
-
-// Synchronisation en arrière-plan
+// === SYNCHRONISATION EN ARRIÈRE-PLAN ===
 self.addEventListener('sync', (event) => {
-  console.log('🔄 Service Worker: Sync', event.tag);
+  console.log('🔄 Sync event:', event.tag);
   
   if (event.tag === 'sync-notifications') {
     event.waitUntil(syncNotifications());
@@ -295,56 +210,52 @@ self.addEventListener('sync', (event) => {
 });
 
 async function syncNotifications() {
-  console.log('🔄 Synchronisation des notifications...');
+  console.log('🔄 Synchronisation des notifications en arrière-plan...');
   
-  // Ici, vous pouvez synchroniser les données en arrière-plan
-  // Par exemple, vérifier les nouvelles notes, devoirs, etc.
+  // Récupérer les dernières données
+  const clients = await self.clients.matchAll();
+  clients.forEach(client => {
+    client.postMessage({
+      type: 'BACKGROUND_SYNC',
+      timestamp: Date.now()
+    });
+  });
   
-  return Promise.resolve();
+  // Mettre à jour le badge
+  updateBadge(1);
 }
 
-// Gérer les notifications périodiques
-self.addEventListener('periodicsync', (event) => {
-  console.log('⏰ Service Worker: Periodic Sync', event.tag);
+// === MISE À JOUR DU BADGE ===
+function updateBadge(count) {
+  if ('setAppBadge' in navigator) {
+    navigator.setAppBadge(count).catch(err => {
+      console.log('Badge non supporté:', err);
+    });
+  }
+}
+
+// === MESSAGES DES CLIENTS ===
+self.addEventListener('message', (event) => {
+  const { type, data } = event.data || {};
   
-  if (event.tag === 'check-updates') {
-    event.waitUntil(checkForUpdates());
+  switch (type) {
+    case 'UPDATE_BADGE':
+      updateBadge(data.count || 0);
+      break;
+      
+    case 'CLEAR_BADGE':
+      if ('clearAppBadge' in navigator) {
+        navigator.clearAppBadge();
+      }
+      break;
+      
+    case 'SKIP_WAITING':
+      self.skipWaiting();
+      break;
   }
 });
 
-async function checkForUpdates() {
-  console.log('🔍 Vérification des mises à jour...');
-  
-  try {
-    const response = await fetch('/version.json', { cache: 'no-store' });
-    const data = await response.json();
-    
-    // Comparer avec la version actuelle
-    const currentVersion = '2.1.0';
-    if (data.version !== currentVersion) {
-      console.log(`🔄 Nouvelle version disponible: ${data.version}`);
-      
-      // Envoyer une notification de mise à jour
-      self.registration.showNotification('Mise à jour disponible', {
-        body: `Version ${data.version} disponible. Cliquez pour mettre à jour.`,
-        icon: '/icon-192x192.png',
-        tag: 'update',
-        requireInteraction: true,
-        actions: [
-          { action: 'update', title: '🔄 Mettre à jour' }
-        ]
-      });
-    }
-  } catch (error) {
-    console.error('❌ Erreur vérification mises à jour:', error);
-  }
-}
-
-// Gérer les erreurs
+// === GESTION DES ERREURS ===
 self.addEventListener('error', (error) => {
   console.error('❌ Service Worker erreur:', error);
-});
-
-self.addEventListener('unhandledrejection', (event) => {
-  console.error('❌ Service Worker promesse rejetée:', event.reason);
 });
