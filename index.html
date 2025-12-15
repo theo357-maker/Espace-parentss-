@@ -38,12 +38,7 @@
 <!-- Scripts de mise à jour -->
 <script src="update-system.js"></script>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+  
 
     <style>
         :root {
@@ -133,148 +128,6 @@
 
 /* Ajoutez dans le CSS existant */
 
-.pulse-animation {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-#notification-bell {
-    position: relative;
-}
-
-#notification-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #e74c3c;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    border: 2px solid white;
-}
-
-.notification-badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: var(--danger);
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    animation: pulse 1.5s infinite;
-    border: 2px solid white;
-}
-
-#notification-count {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--danger);
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-.notification-toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: white;
-    border-left: 4px solid var(--primary);
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    padding: 15px 20px;
-    min-width: 300px;
-    max-width: 400px;
-    z-index: 9999;
-    transform: translateX(120%);
-    transition: transform 0.3s ease;
-}
-
-.notification-toast.show {
-    transform: translateX(0);
-}
-
-.notification-toast.success {
-    border-left-color: var(--success);
-}
-
-.notification-toast.warning {
-    border-left-color: var(--warning);
-}
-
-.notification-toast.danger {
-    border-left-color: var(--danger);
-}
-
-.notification-toast.info {
-    border-left-color: var(--info);
-}
-
-.notification-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.notification-title {
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.notification-close {
-    background: none;
-    border: none;
-    color: #999;
-    cursor: pointer;
-    font-size: 1.2rem;
-}
-
-.notification-body {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.notification-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
 .file-preview {
     margin: 1rem 0;
     padding: 1rem;
@@ -316,6 +169,63 @@
 
 .update-toast.danger {
   border-left-color: #e74c3c;
+}
+
+/* Badges d'application */
+.app-badge {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 99999;
+  animation: pulse 1.5s infinite;
+}
+
+/* Animation pour badges */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Badge dans le header */
+#notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+/* Badges sur les items du menu */
+.nav-menu .notification-dot {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 8px;
+  height: 8px;
+  background: #e74c3c;
+  border-radius: 50%;
+  border: 2px solid white;
 }
 
 .update-toast.info {
@@ -3217,7 +3127,6 @@ function updateAppBadge(count) {
         });
     }
 }
-
 
 // Fonction pour initialiser les notifications périodiques
 function initializePeriodicNotifications() {
@@ -7685,1168 +7594,228 @@ window.clearAppCache = function() {
   }, 1000);
 };
 </script>
-<script>
-// 🔔 Fonction pour mettre à jour le badge (depuis la page principale)
-async function updateAppBadgeFromPage(count) {
-    // Vérifier si l'API est supportée
-    if ('setAppBadge' in navigator) {
-        try {
-            if (count > 0) {
-                await navigator.setAppBadge(count);
-                console.log(`✅ Badge mis à jour: ${count}`);
-            } else {
-                await navigator.clearAppBadge();
-                console.log('✅ Badge effacé');
-            }
-        } catch (error) {
-            console.error('❌ Erreur badge:', error);
-        }
-    } else {
-        console.log('⚠️ API Badge non supportée');
-    }
-}
 
-// 🔄 Appelez cette fonction quand vous recevez une notification
-// Exemple dans votre fonction setupRealTimeNotificationsOptimized :
-function showLocalNotification(title, body, data = {}) {
-    // ... votre code existant ...
-
-    // Mettre à jour le badge
-    const newCount = (notificationCounts.total || 0) + 1;
-    updateAppBadgeFromPage(newCount);
-
-    // ... reste du code ...
-}
-</script>
 <script>
 
-// 🔔 Fonction pour communiquer avec le Service Worker
-async function communicateWithServiceWorker() {
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    // Vérifier si le SW est prêt
-    const response = await new Promise(resolve => {
-      const messageChannel = new MessageChannel();
-      messageChannel.port1.onmessage = (event) => {
-        resolve(event.data);
-      };
-      
-      navigator.serviceWorker.controller.postMessage(
-        { type: 'PING' },
-        [messageChannel.port2]
-      );
-    });
-    
-    console.log('Service Worker réponse:', response);
-    return response;
+// === GESTION DES BADGES D'APPLICATION ===
+async function updateAppBadge(count) {
+  if (!('setAppBadge' in navigator)) {
+    console.log('⚠️ Badges d\'application non supportés');
+    return;
   }
-  return null;
-}
-
-// 🏷️ Mettre à jour le badge depuis la page
-async function updateBadge(count) {
-  if ('setAppBadge' in navigator) {
-    try {
-      if (count > 0) {
-        await navigator.setAppBadge(count);
-        console.log(`✅ Badge mis à jour: ${count}`);
-        
-        // Informer aussi le Service Worker
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({
-            type: 'SET_BADGE_COUNT',
-            data: { count }
-          });
-        }
-      } else {
-        await navigator.clearAppBadge();
-        console.log('✅ Badge effacé');
-      }
-    } catch (error) {
-      console.error('❌ Erreur badge:', error);
-    }
-  }
-}
-
-// 📨 Écouter les messages du Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    const { type, data } = event.data || {};
-    
-    switch (type) {
-      case 'BACKGROUND_NOTIFICATION':
-        // Une notification a été reçue en arrière-plan
-        console.log('Notification reçue du SW:', data);
-        updateNotificationCount(1);
-        break;
-        
-      case 'SERVICE_WORKER_ACTIVE':
-        console.log(`✅ Service Worker actif (v${data.version})`);
-        break;
-    }
-  });
-}
-
-// Appeler cette fonction au chargement
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(communicateWithServiceWorker, 3000);
-});
-
-</script>
-<script>
-// === CONFIGURATION COMPLÈTE DES NOTIFICATIONS FIREBASE ===
-
-let messaging = null;
-let fcmToken = null;
-const vapidKey = "BFc44CIL4VykUiY8_17s_HbUm5pRqhNhlFcy35H0XKuyFIq-2472MTfMZBfKMxW81DCHTkRB4xy_WaH-f3Ik2TM";
-
-// Initialiser Firebase Messaging
-async function initializeFirebaseMessaging() {
-    try {
-        console.log('🔔 Initialisation Firebase Messaging...');
-        
-        // Vérifier si les notifications sont supportées
-        if (!('Notification' in window)) {
-            console.log('❌ Navigateur ne supporte pas les notifications');
-            updateNotificationStatus('❌ Navigateur ne supporte pas les notifications');
-            return;
-        }
-        
-        // Vérifier Service Worker
-        if (!('serviceWorker' in navigator)) {
-            console.log('❌ Service Worker non supporté');
-            updateNotificationStatus('❌ Service Worker non supporté');
-            return;
-        }
-        
-        // Enregistrer le Service Worker
-        let registration;
-        try {
-            registration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/',
-                updateViaCache: 'none'
-            });
-            console.log('✅ Service Worker enregistré:', registration.scope);
-            
-            // Attendre l'activation
-            if (registration.installing) {
-                await new Promise(resolve => {
-                    registration.installing.addEventListener('statechange', () => {
-                        if (registration.active) resolve();
-                    });
-                });
-            }
-        } catch (swError) {
-            console.error('❌ Erreur Service Worker:', swError);
-            // Essayer avec un Service Worker local
-            registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-                scope: '/'
-            });
-        }
-        
-        // Charger Firebase Messaging
-        const { getMessaging, getToken, onMessage, isSupported } = await import('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging.js');
-        
-        // Vérifier support
-        const messagingSupported = await isSupported();
-        if (!messagingSupported) {
-            console.log('❌ Firebase Messaging non supporté');
-            return;
-        }
-        
-        // Initialiser
-        messaging = getMessaging(app);
-        
-        // Demander la permission si nécessaire
-        if (Notification.permission === 'default') {
-            await requestNotificationPermission();
-        }
-        
-        if (Notification.permission !== 'granted') {
-            console.log('❌ Permission non accordée');
-            updateNotificationStatus('❌ Notifications désactivées');
-            return;
-        }
-        
-        // Obtenir le token FCM
-        try {
-            const token = await getToken(messaging, {
-                vapidKey: vapidKey,
-                serviceWorkerRegistration: registration
-            });
-            
-            if (token) {
-                fcmToken = token;
-                console.log('✅ Token FCM obtenu:', token.substring(0, 30) + '...');
-                
-                // Sauvegarder le token
-                await saveFCMToken(token);
-                
-                // Configurer l'écoute des messages
-                setupMessageListener(messaging);
-                
-                // Mettre à jour le statut
-                updateNotificationStatus('✅ Notifications activées');
-                
-                // Tester
-                setTimeout(() => {
-                    sendWelcomeNotification();
-                }, 3000);
-                
-            } else {
-                console.log('⚠️ Aucun token disponible');
-                updateNotificationStatus('⚠️ Configuration requise');
-            }
-            
-        } catch (tokenError) {
-            console.error('❌ Erreur token FCM:', tokenError);
-            
-            if (tokenError.code === 'messaging/permission-blocked') {
-                updateNotificationStatus('❌ Notifications bloquées');
-                showToast('Les notifications sont bloquées dans votre navigateur. Veuillez les autoriser.', 'warning');
-            } else if (tokenError.code === 'messaging/permission-default') {
-                await requestNotificationPermission();
-            }
-        }
-        
-    } catch (error) {
-        console.error('❌ Erreur initialisation Firebase:', error);
-        updateNotificationStatus('❌ Erreur configuration');
-    }
-}
-
-// Sauvegarder le token FCM
-async function saveFCMToken(token) {
-    if (!currentParent || !token) return;
-    
-    try {
-        await updateDoc(doc(db, 'parents', currentParent.matricule), {
-            fcmToken: token,
-            notificationEnabled: true,
-            lastTokenUpdate: serverTimestamp(),
-            deviceInfo: {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language
-            }
-        });
-        console.log('✅ Token sauvegardé dans Firestore');
-        return true;
-    } catch (error) {
-        console.error('❌ Erreur sauvegarde token:', error);
-        return false;
-    }
-}
-
-// Demander la permission
-async function requestNotificationPermission() {
-    console.log('🔔 Demande de permission...');
-    
-    try {
-        const permission = await Notification.requestPermission();
-        console.log('Permission:', permission);
-        
-        if (permission === 'granted') {
-            showToast('✅ Notifications activées!', 'success');
-            
-            // Réinitialiser
-            await initializeFirebaseMessaging();
-            
-            return true;
-        } else {
-            showToast('❌ Notifications refusées', 'warning');
-            updateNotificationStatus('❌ Notifications refusées');
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Erreur permission:', error);
-        return false;
-    }
-}
-
-// Configurer l'écoute des messages
-function setupMessageListener(messaging) {
-    if (!messaging) return;
-    
-    try {
-        onMessage(messaging, (payload) => {
-            console.log('📨 Message reçu en premier plan:', payload);
-            
-            // Extraire les données
-            const title = payload.notification?.title || 'Nouvelle notification';
-            const body = payload.notification?.body || 'Vous avez une nouvelle notification';
-            const data = payload.data || {};
-            
-            // Afficher la notification
-            showInAppNotification(title, body, data);
-            
-            // Incrémenter le compteur
-            incrementNotificationCounter();
-            
-            // Jouer un son
-            playNotificationSound();
-            
-            // Mettre à jour le badge
-            updateAppBadge(getNotificationCount() + 1);
-        });
-        
-        console.log('✅ Écouteur de messages configuré');
-    } catch (error) {
-        console.error('❌ Erreur écouteur:', error);
-    }
-}
-
-// Afficher une notification dans l'app
-function showInAppNotification(title, body, data = {}) {
-    // Créer l'élément de notification
-    const notificationId = 'notification-' + Date.now();
-    const notification = document.createElement('div');
-    notification.id = notificationId;
-    notification.className = `notification-toast ${data.type || 'info'}`;
-    
-    // Icône selon le type
-    const icon = getNotificationIcon(data.type);
-    const badge = getNotificationBadge(data.type);
-    
-    notification.innerHTML = `
-        <div class="notification-header">
-            <div class="notification-title">
-                <i class="${icon}"></i> ${title}
-                ${badge}
-            </div>
-            <button class="notification-close">&times;</button>
-        </div>
-        <div class="notification-body">${body}</div>
-        <div class="notification-actions">
-            <button class="btn btn-primary btn-sm view-btn" data-page="${data.page || ''}" data-child="${data.childId || ''}">
-                <i class="fas fa-eye"></i> Voir
-            </button>
-            <button class="btn btn-secondary btn-sm close-btn">
-                <i class="fas fa-times"></i> Fermer
-            </button>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Animation
-    setTimeout(() => notification.classList.add('show'), 100);
-    
-    // Gestionnaires d'événements
-    notification.querySelector('.view-btn').addEventListener('click', () => {
-        handleNotificationClick(data.page, data.childId);
-        notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    });
-    
-    notification.querySelector('.close-btn').addEventListener('click', () => {
-        notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    });
-    
-    notification.querySelector('.notification-close').addEventListener('click', () => {
-        notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    });
-    
-    // Fermeture automatique
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }
-    }, 10000);
-}
-
-// Gérer le clic sur une notification
-function handleNotificationClick(page, childId = '') {
-    if (!page) return;
-    
-    console.log(`Naviguer vers ${page}`, childId ? `(enfant: ${childId})` : '');
-    
-    // Trouver le lien
-    const link = document.querySelector(`.nav-menu a[data-page="${page}"]`);
-    if (link) {
-        link.click();
-        
-        if (childId) {
-            setTimeout(() => {
-                const selectors = {
-                    'grades': 'secondary-grades-child-selector',
-                    'presence-incidents': 'presence-child-selector',
-                    'homework': 'secondary-homework-child-selector',
-                    'communiques': 'communique-child-selector',
-                    'dashboard': 'child-selector'
-                };
-                
-                const selectorId = selectors[page];
-                if (selectorId) {
-                    const selector = document.getElementById(selectorId);
-                    if (selector && selector.value !== childId) {
-                        selector.value = childId;
-                        selector.dispatchEvent(new Event('change'));
-                    }
-                }
-            }, 1000);
-        }
-    }
-}
-
-// Obtenir l'icône
-function getNotificationIcon(type) {
-    const icons = {
-        'grades': 'fas fa-chart-line',
-        'homework': 'fas fa-book',
-        'incidents': 'fas fa-exclamation-triangle',
-        'presence': 'fas fa-calendar-check',
-        'communiques': 'fas fa-newspaper',
-        'timetable': 'fas fa-clock',
-        'payments': 'fas fa-money-bill-wave',
-        'test': 'fas fa-bell',
-        'default': 'fas fa-info-circle'
-    };
-    return icons[type] || icons.default;
-}
-
-// Obtenir le badge
-function getNotificationBadge(type) {
-    const badges = {
-        'grades': '<span class="badge badge-success" style="margin-left: 8px;">Note</span>',
-        'homework': '<span class="badge badge-warning" style="margin-left: 8px;">Devoir</span>',
-        'incidents': '<span class="badge badge-danger" style="margin-left: 8px;">Incident</span>',
-        'presence': '<span class="badge badge-info" style="margin-left: 8px;">Présence</span>',
-        'communiques': '<span class="badge badge-primary" style="margin-left: 8px;">Communiqué</span>',
-        'default': ''
-    };
-    return badges[type] || '';
-}
-
-// Incrémenter le compteur
-function incrementNotificationCounter() {
-    const counter = document.getElementById('notification-count');
-    if (!counter) return;
-    
-    let count = parseInt(counter.textContent) || 0;
-    count++;
-    
-    counter.textContent = count;
-    counter.classList.remove('hidden');
-    
-    // Animer la cloche
-    const bell = document.getElementById('notification-bell');
-    if (bell) {
-        bell.classList.add('pulse-animation');
-    }
-    
-    // Mettre à jour le badge de l'app
-    updateAppBadge(count);
-    
-    // Sauvegarder dans localStorage
-    localStorage.setItem('notification_count', count);
-}
-
-// Obtenir le nombre de notifications
-function getNotificationCount() {
-    return parseInt(localStorage.getItem('notification_count')) || 0;
-}
-
-// Réinitialiser le compteur
-function resetNotificationCounter() {
-    const counter = document.getElementById('notification-count');
-    if (counter) {
-        counter.textContent = '0';
-        counter.classList.add('hidden');
-    }
-    
-    const bell = document.getElementById('notification-bell');
-    if (bell) {
-        bell.classList.remove('pulse-animation');
-    }
-    
-    updateAppBadge(0);
-    localStorage.setItem('notification_count', '0');
-}
-
-// Mettre à jour le badge de l'app
-function updateAppBadge(count) {
-    // Badge API (Chrome, Edge)
-    if ('setAppBadge' in navigator) {
-        navigator.setAppBadge(count).catch(console.error);
-    }
-    
-    // Pour Safari
-    if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
-        document.title = count > 0 ? `(${count}) CS La Colombe` : 'CS La Colombe';
-    }
-}
-
-// Jouer un son
-function playNotificationSound() {
-    try {
-        const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
-        audio.volume = 0.3;
-        audio.play().catch(() => {});
-    } catch (e) {}
-}
-
-// Mettre à jour le statut dans l'interface
-function updateNotificationStatus(message) {
-    const element = document.getElementById('notification-status');
-    if (!element) return;
-    
-    element.textContent = message;
-    
-    if (message.includes('✅') || message.includes('activées')) {
-        element.style.color = 'var(--success)';
-        element.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    } else if (message.includes('❌') || message.includes('désactivées')) {
-        element.style.color = 'var(--danger)';
-        element.innerHTML = `<i class="fas fa-times-circle"></i> ${message}`;
+  
+  try {
+    if (count > 0) {
+      await navigator.setAppBadge(count);
+      console.log(`✅ Badge mis à jour: ${count}`);
     } else {
-        element.style.color = 'var(--warning)';
-        element.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
-    }
-}
-
-// === ENVOYER DES NOTIFICATIONS ===
-
-async function sendFirebaseNotification(title, body, data = {}) {
-    if (!currentParent?.fcmToken) {
-        console.log('❌ Pas de token FCM disponible');
-        return false;
+      await navigator.clearAppBadge();
+      console.log('✅ Badge effacé');
     }
     
-    try {
-        // Préparer la notification
-        const notificationData = {
-            notification: {
-                title: title,
-                body: body,
-                icon: '/icon-192x192.png',
-                badge: '/icon-72x72.png',
-                vibrate: [200, 100, 200]
-            },
-            data: {
-                type: data.type || 'general',
-                page: data.page || '',
-                childId: data.childId || '',
-                childName: data.childName || '',
-                timestamp: new Date().toISOString(),
-                url: window.location.origin
-            },
-            to: currentParent.fcmToken,
-            priority: 'high'
-        };
-        
-        console.log('📤 Envoi notification:', title);
-        
-        // Envoyer via l'API Firebase (utilisez votre clé serveur)
-        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'key=AIzaSyBn7VIddclO7KtrXb5sibCr9SjVLjOy-qI', // Votre clé API Firebase
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(notificationData)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('✅ Notification envoyée:', result);
-        
-        return true;
-        
-    } catch (error) {
-        console.error('❌ Erreur envoi notification:', error);
-        
-        // Fallback : notification locale
-        if (document.visibilityState === 'visible') {
-            showInAppNotification(title, body, data);
-        }
-        
-        return false;
-    }
-}
-
-// Notification de bienvenue
-async function sendWelcomeNotification() {
-    if (!currentParent) return;
-    
-    await sendFirebaseNotification(
-        '👋 Bienvenue dans l\'Espace Parent',
-        'Les notifications sont maintenant activées. Vous serez alerté des nouvelles notes, devoirs, etc.',
-        {
-            type: 'test',
-            page: 'dashboard'
-        }
-    );
-}
-
-// Notification de test
-async function sendTestNotification() {
-    if (!currentParent) {
-        showToast('Veuillez vous connecter d\'abord', 'warning');
-        return;
-    }
-    
-    const child = childrenList[0];
-    
-    const sent = await sendFirebaseNotification(
-        '🔔 Test de notification',
-        `Ceci est un test. Les notifications fonctionnent pour ${child?.fullName || 'votre enfant'}`,
-        {
-            type: 'test',
-            page: 'dashboard',
-            childId: child?.matricule,
-            childName: child?.fullName
-        }
-    );
-    
-    if (sent) {
-        showToast('✅ Notification de test envoyée', 'success');
-    } else {
-        showToast('❌ Erreur d\'envoi', 'error');
-    }
-}
-
-// === ÉCOUTEURS EN TEMPS RÉEL ===
-
-function setupRealtimeListeners() {
-    if (!currentParent) return;
-    
-    console.log('🎯 Configuration des écouteurs temps réel...');
-    
-    // Écouter les notes
-    const gradesQuery = query(collection(db, 'published_grades'), orderBy('publishedAt', 'desc'));
-    onSnapshot(gradesQuery, (snapshot) => {
-        snapshot.docChanges().forEach(change => {
-            if (change.type === 'added') {
-                const grade = change.doc.data();
-                checkAndNotifyGrade(grade);
-            }
-        });
-    });
-    
-    // Écouter les incidents
-    const incidentsQuery = query(collection(db, 'incidents'), orderBy('createdAt', 'desc'));
-    onSnapshot(incidentsQuery, (snapshot) => {
-        snapshot.docChanges().forEach(change => {
-            if (change.type === 'added') {
-                const incident = change.doc.data();
-                checkAndNotifyIncident(incident);
-            }
-        });
-    });
-    
-    // Écouter les devoirs
-    const homeworkQuery = query(collection(db, 'homework'), orderBy('createdAt', 'desc'));
-    onSnapshot(homeworkQuery, (snapshot) => {
-        snapshot.docChanges().forEach(change => {
-            if (change.type === 'added') {
-                const homework = change.doc.data();
-                checkAndNotifyHomework(homework);
-            }
-        });
-    });
-    
-    console.log('✅ Écouteurs configurés');
-}
-
-// Vérifier et notifier les notes
-function checkAndNotifyGrade(grade) {
-    childrenList.forEach(child => {
-        if (child.type === 'secondary' && child.class === grade.className) {
-            const hasGrade = grade.grades?.some(g => g.studentMatricule === child.matricule);
-            if (hasGrade) {
-                sendFirebaseNotification(
-                    '📊 Nouvelle note publiée',
-                    `${child.fullName} a une note en ${grade.subject}`,
-                    {
-                        type: 'grades',
-                        page: 'grades',
-                        childId: child.matricule,
-                        childName: child.fullName
-                    }
-                );
-            }
-        }
-    });
-}
-
-// Vérifier et notifier les incidents
-function checkAndNotifyIncident(incident) {
-    const child = childrenList.find(c => 
-        c.matricule === incident.studentMatricule || 
-        c.matricule === incident.studentId
-    );
-    
-    if (child) {
-        sendFirebaseNotification(
-            '⚠️ Nouvel incident',
-            `${child.fullName}: ${incident.type}`,
-            {
-                type: 'incidents',
-                page: 'presence-incidents',
-                childId: child.matricule,
-                childName: child.fullName
-            }
-        );
-    }
-}
-
-// Vérifier et notifier les devoirs
-function checkAndNotifyHomework(homework) {
-    childrenList.forEach(child => {
-        if (child.type === 'secondary' && child.class === homework.className) {
-            sendFirebaseNotification(
-                '📚 Nouveau devoir',
-                `${child.fullName}: ${homework.subject} - ${homework.title}`,
-                {
-                    type: 'homework',
-                    page: 'homework',
-                    childId: child.matricule,
-                    childName: child.fullName
-                }
-            );
-        }
-    });
-}
-
-// === MODIFICATION DE onAuthStateChanged ===
-
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const q = query(collection(db, 'parents'), where('uid', '==', user.uid));
-        const snap = await getDocs(q);
-        
-        if (!snap.empty) {
-            currentParent = { id: snap.docs[0].id, ...snap.docs[0].data() };
-            
-            // Afficher l'application
-            document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('app-root').classList.remove('hidden');
-            
-            // Mettre à jour l'interface
-            document.getElementById('parent-name').textContent = currentParent.fullName;
-            
-            // Photo de profil
-            const photoContainer = document.getElementById('parent-photo-container');
-            if (currentParent.photoURL) {
-                photoContainer.innerHTML = `<img src="${currentParent.photoURL}" class="parent-photo" alt="Photo">`;
-            }
-            
-            // Charger les données
-            await loadParentData();
-            
-            // Initialiser les notifications
-            console.log('🔔 Démarrage des notifications...');
-            await initializeFirebaseMessaging();
-            
-            // Configurer les écouteurs
-            setupRealtimeListeners();
-            
-            // Initialiser les communiqués
-            initCommuniqueSelectors();
-            
-            // Restaurer le compteur
-            const savedCount = getNotificationCount();
-            if (savedCount > 0) {
-                const counter = document.getElementById('notification-count');
-                if (counter) {
-                    counter.textContent = savedCount;
-                    counter.classList.remove('hidden');
-                    updateAppBadge(savedCount);
-                }
-            }
-            
-            console.log('✅ Application prête pour', currentParent.fullName);
-            
-        } else {
-            await signOut(auth);
-            showToast('Compte non trouvé', 'error');
-        }
-    } else {
-        document.getElementById('login-overlay').classList.remove('hidden');
-        document.getElementById('app-root').classList.add('hidden');
-    }
-});
-
-// === FONCTIONS GLOBALES ===
-
-window.enableNotifications = requestNotificationPermission;
-window.testNotification = sendTestNotification;
-window.resetNotifications = resetNotificationCounter;
-
-
-</script>
-
-
-<script>
-// Débogage
-window.debugNotifications = async () => {
-    console.clear();
-    console.log('=== DÉBOGAGE NOTIFICATIONS ===');
-    
-    console.log('1. 🔔 ÉTAT DES PERMISSIONS');
-    console.log('- Notification.permission:', Notification.permission);
-    console.log('- Service Worker:', navigator.serviceWorker.controller ? '✅ Actif' : '❌ Inactif');
-    
-    console.log('2. 👤 UTILISATEUR');
-    console.log('- Connecté:', !!currentParent);
-    console.log('- Parent:', currentParent?.fullName);
-    console.log('- Token FCM:', currentParent?.fcmToken ? '✅ Présent' : '❌ Absent');
-    if (currentParent?.fcmToken) {
-        console.log('  Token:', currentParent.fcmToken.substring(0, 30) + '...');
-    }
-    
-    console.log('3. 📱 ÉTAT APPLICATION');
-    console.log('- En ligne:', navigator.onLine);
-    console.log('- User Agent:', navigator.userAgent);
-    console.log('- PWA:', window.matchMedia('(display-mode: standalone)').matches);
-    
-    console.log('4. 🧪 TESTS');
-    
-    // Test 1: Notification locale
-    if (Notification.permission === 'granted') {
-        new Notification('Test local', {
-            body: 'Ceci est un test de notification locale',
-            icon: '/icon-192x192.png'
-        });
-        console.log('✅ Notification locale envoyée');
-    }
-    
-    // Test 2: Notification Firebase
-    if (currentParent?.fcmToken) {
-        console.log('📤 Envoi notification Firebase...');
-        const success = await sendTestNotification();
-        console.log(success ? '✅ Notification Firebase envoyée' : '❌ Échec notification Firebase');
-    }
-    
-    console.log('=== FIN DÉBOGAGE ===');
-};
-
-// Écouter les messages du Service Worker
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data.type === 'NOTIFICATION_CLICK') {
-            handleNotificationClick(event.data.page, event.data.data?.childId);
-        }
-    });
-}
-
-
-</script>
-
-<script>
-// === SCRIPT DE GESTION DES NOTIFICATIONS ET SERVICE WORKER ===
-
-// Initialiser le Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      // Enregistrer le Service Worker principal
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-        updateViaCache: 'none'
+    // Synchroniser avec le Service Worker
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'UPDATE_BADGE',
+        data: { count }
       });
+    }
+  } catch (error) {
+    console.error('❌ Erreur badge:', error);
+  }
+}
+
+// === FONCTION POUR LES NOTIFICATIONS EN TEMPS RÉEL ===
+async function setupRealTimeBackgroundNotifications() {
+  if (!currentParent || childrenList.length === 0) return;
+  
+  console.log('🔔 Configuration notifications arrière-plan...');
+  
+  // 1. Écouter les nouvelles notes
+  for (const child of childrenList) {
+    if (child.type === 'secondary') {
+      const gradesQuery = query(
+        collection(db, 'published_grades'),
+        where('className', '==', child.class)
+      );
       
-      console.log('✅ Service Worker enregistré:', registration.scope);
-      
-      // Vérifier les mises à jour
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        console.log('🔄 Nouveau Service Worker trouvé');
-        
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('🔄 Nouvelle version disponible');
-            showUpdateNotification();
+      onSnapshot(gradesQuery, (snapshot) => {
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === 'added') {
+            const gradeData = change.doc.data();
+            const hasStudentGrade = gradeData.grades?.some(g => 
+              g.studentMatricule === child.matricule
+            );
+            
+            if (hasStudentGrade) {
+              await sendBackgroundNotification(
+                '📊 Nouvelle note',
+                `${child.fullName} a une note en ${gradeData.subject}`,
+                {
+                  type: 'grades',
+                  page: 'grades',
+                  childId: child.matricule,
+                  childName: child.fullName
+                }
+              );
+              
+              // Mettre à jour le badge
+              const currentCount = parseInt(document.getElementById('notification-count').textContent) || 0;
+              updateAppBadge(currentCount + 1);
+            }
           }
         });
       });
-      
-      // Vérifier l'état
-      if (registration.waiting) {
-        console.log('⏳ Service Worker en attente');
-        showUpdateNotification();
-      }
-      
-      if (registration.active) {
-        console.log('✅ Service Worker actif');
-      }
-      
-      // Écouter les messages du Service Worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        console.log('📩 Message du Service Worker:', event.data);
-        
-        switch (event.data.type) {
-          case 'NEW_NOTIFICATION':
-            console.log('🔔 Nouvelle notification reçue');
-            incrementNotificationCount();
-            break;
-            
-          case 'NOTIFICATION_CLICKED':
-            const { page, childId } = event.data;
-            navigateToPage(page, childId);
-            break;
-            
-          case 'UPDATE_AVAILABLE':
-            showUpdateNotification();
-            break;
-        }
-      });
-      
-      // Envoyer un message au Service Worker
-      registration.active?.postMessage({
-        type: 'APP_LOADED',
-        version: '2.1.0'
-      });
-      
-    } catch (error) {
-      console.error('❌ Erreur Service Worker:', error);
     }
-  });
-}
-
-// Afficher une notification de mise à jour
-function showUpdateNotification() {
-  const toast = document.createElement('div');
-  toast.className = 'notification-toast info';
-  toast.innerHTML = `
-    <div class="notification-header">
-      <div class="notification-title">
-        <i class="fas fa-sync-alt"></i> Mise à jour disponible
-      </div>
-      <button class="notification-close">&times;</button>
-    </div>
-    <div class="notification-body">
-      <p>Une nouvelle version de l'application est disponible.</p>
-      <p>Voulez-vous recharger pour profiter des dernières fonctionnalités ?</p>
-      <div class="notification-actions">
-        <button class="btn btn-primary btn-sm" id="reload-app-btn">
-          <i class="fas fa-redo"></i> Recharger
-        </button>
-        <button class="btn btn-secondary btn-sm" id="later-btn">
-          Plus tard
-        </button>
-      </div>
-    </div>
-  `;
+  }
   
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add('show'), 100);
-  
-  // Gestionnaires
-  document.getElementById('reload-app-btn').addEventListener('click', () => {
-    window.location.reload();
-  });
-  
-  document.getElementById('later-btn').addEventListener('click', () => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  });
-  
-  toast.querySelector('.notification-close').addEventListener('click', () => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  });
-}
-
-// Navigation depuis les notifications
-function navigateToPage(page, childId = '') {
-  console.log(`Naviguer vers ${page}`, childId ? `(enfant: ${childId})` : '');
-  
-  const link = document.querySelector(`.nav-menu a[data-page="${page}"]`);
-  if (link) {
-    // Activer le lien
-    document.querySelectorAll('.nav-menu a, .page').forEach(el => el.classList.remove('active'));
-    link.classList.add('active');
-    document.getElementById(`${page}-page`).classList.add('active');
-    document.getElementById('page-title').textContent = link.textContent;
+  // 2. Écouter les incidents
+  for (const child of childrenList) {
+    const incidentsQuery = query(
+      collection(db, 'incidents'),
+      where('studentMatricule', '==', child.matricule)
+    );
     
-    // Sélectionner l'enfant si spécifié
-    if (childId) {
-      setTimeout(() => {
-        let selector;
-        switch(page) {
-          case 'grades':
-            selector = document.getElementById('secondary-grades-child-selector');
-            break;
-          case 'presence-incidents':
-            selector = document.getElementById('presence-child-selector');
-            break;
-          case 'homework':
-            selector = document.getElementById('secondary-homework-child-selector');
-            break;
-          case 'communiques':
-            selector = document.getElementById('communique-child-selector');
-            break;
-          case 'dashboard':
-            selector = document.getElementById('child-selector');
-            break;
+    onSnapshot(incidentsQuery, (snapshot) => {
+      snapshot.docChanges().forEach(async (change) => {
+        if (change.type === 'added') {
+          await sendBackgroundNotification(
+            '⚠️ Nouvel incident',
+            `Incident signalé pour ${child.fullName}`,
+            {
+              type: 'incidents',
+              page: 'presence-incidents',
+              childId: child.matricule,
+              childName: child.fullName
+            }
+          );
+          
+          updateAppBadge(1);
         }
-        
-        if (selector && selector.value !== childId) {
-          selector.value = childId;
-          selector.dispatchEvent(new Event('change'));
-        }
-      }, 1000);
-    }
-  }
-}
-
-// Incrémenter le compteur de notifications
-function incrementNotificationCount() {
-  const counter = document.getElementById('notification-count');
-  if (!counter) return;
-  
-  let count = parseInt(counter.textContent) || 0;
-  count++;
-  
-  counter.textContent = count;
-  counter.classList.remove('hidden');
-  
-  // Mettre à jour le badge
-  updateAppBadge(count);
-  
-  // Animer la cloche
-  const bell = document.getElementById('notification-bell');
-  if (bell) {
-    bell.style.animation = 'pulse 1.5s infinite';
-  }
-  
-  console.log(`🔔 Notification reçue. Total: ${count}`);
-}
-
-// Mettre à jour le badge de l'application
-function updateAppBadge(count) {
-  // Badge API
-  if ('setAppBadge' in navigator) {
-    navigator.setAppBadge(count).catch(error => {
-      console.log('Badge API ignorée:', error);
+      });
     });
   }
   
-  // Pour le titre
-  document.title = count > 0 
-    ? `(${count}) Espace Parent - CS la Colombe`
-    : 'Espace Parent - CS la Colombe';
-}
-
-// Réinitialiser le compteur
-function resetNotificationCount() {
-  const counter = document.getElementById('notification-count');
-  if (counter) {
-    counter.textContent = '0';
-    counter.classList.add('hidden');
-  }
-  
-  const bell = document.getElementById('notification-bell');
-  if (bell) {
-    bell.style.animation = '';
-  }
-  
-  updateAppBadge(0);
-}
-
-// Vérifier les permissions
-function checkNotificationPermission() {
-  if (!('Notification' in window)) {
-    console.log('❌ Navigateur ne supporte pas les notifications');
-    return false;
-  }
-  
-  const permission = Notification.permission;
-  console.log(`Permission: ${permission}`);
-  
-  if (permission === 'granted') {
-    return true;
-  } else if (permission === 'denied') {
-    console.log('❌ Notifications bloquées');
-    return false;
-  }
-  
-  return null;
-}
-
-// Fonction de débogage
-window.debugServiceWorker = async function() {
-  console.clear();
-  console.log('=== DÉBOGAGE SERVICE WORKER ===');
-  
-  // Vérifier Service Worker
-  if ('serviceWorker' in navigator) {
-    const registration = await navigator.serviceWorker.getRegistration();
-    console.log('Service Worker:', registration ? '✅ Enregistré' : '❌ Non enregistré');
-    
-    if (registration) {
-      console.log('Scope:', registration.scope);
-      console.log('État:', registration.active?.state);
+  // 3. Écouter les devoirs
+  for (const child of childrenList) {
+    if (child.type === 'secondary') {
+      const homeworkQuery = query(
+        collection(db, 'homework'),
+        where('className', '==', child.class)
+      );
       
-      // Vérifier les workers
-      if (registration.installing) {
-        console.log('Installing:', registration.installing.state);
-      }
-      if (registration.waiting) {
-        console.log('Waiting:', registration.waiting.state);
-      }
-      if (registration.active) {
-        console.log('Active:', registration.active.state);
-      }
+      onSnapshot(homeworkQuery, (snapshot) => {
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === 'added') {
+            await sendBackgroundNotification(
+              '📚 Nouveau devoir',
+              `${child.fullName} a un nouveau devoir`,
+              {
+                type: 'homework',
+                page: 'homework',
+                childId: child.matricule,
+                childName: child.fullName
+              }
+            );
+            
+            updateAppBadge(1);
+          }
+        });
+      });
     }
-  } else {
-    console.log('❌ Service Worker non supporté');
   }
   
-  // Vérifier notifications
-  console.log('Notifications:', Notification.permission);
-  console.log('Push Manager:', 'PushManager' in window ? '✅ Supporté' : '❌ Non supporté');
-  
-  // Tester une notification locale
-  if (Notification.permission === 'granted') {
-    new Notification('Test Service Worker', {
-      body: 'Ceci est un test',
-      icon: '/icon-192x192.png'
+  // 4. Écouter les communiqués
+  if (currentParent) {
+    const communiquesQuery = query(
+      collection(db, 'parent_communique_relations'),
+      where('parentId', '==', currentParent.matricule)
+    );
+    
+    onSnapshot(communiquesQuery, (snapshot) => {
+      snapshot.docChanges().forEach(async (change) => {
+        if (change.type === 'added') {
+          await sendBackgroundNotification(
+            '📄 Nouveau communiqué',
+            'Nouveau communiqué de paiement disponible',
+            {
+              type: 'communiques',
+              page: 'communiques'
+            }
+          );
+          
+          updateAppBadge(1);
+        }
+      });
     });
-    console.log('✅ Notification test envoyée');
   }
-  
-  console.log('=== FIN DÉBOGAGE ===');
-};
+}
 
-// Écouter les messages de firebase-messaging-sw.js
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data.type === 'FIREBASE_BACKGROUND_MESSAGE') {
-      console.log('📨 Message Firebase:', event.data.payload);
-      incrementNotificationCount();
+// === ENVOYER NOTIFICATION ARRIÈRE-PLAN ===
+async function sendBackgroundNotification(title, body, data = {}) {
+  try {
+    // 1. Mettre à jour le compteur de notifications
+    const notificationCount = document.getElementById('notification-count');
+    let currentCount = parseInt(notificationCount.textContent) || 0;
+    notificationCount.textContent = currentCount + 1;
+    notificationCount.classList.remove('hidden');
+    
+    // 2. Sauvegarder la notification localement
+    const notification = {
+      id: `notif_${Date.now()}`,
+      title,
+      body,
+      type: data.type || 'general',
+      data,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+    
+    // 3. Envoyer au Service Worker (même si app fermée)
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'BACKGROUND_NOTIFICATION',
+        data: notification
+      });
     }
+    
+    // 4. Notification locale (si app ouverte)
+    if (Notification.permission === 'granted' && !document.hidden) {
+      showLocalNotification(title, body, data);
+    }
+    
+    // 5. Mettre à jour la liste des notifications
+    notifications.unshift(notification);
+    saveNotificationsToStorage();
+    
+  } catch (error) {
+    console.error('❌ Erreur notification arrière-plan:', error);
+  }
+}
+
+// === INITIALISATION COMPLÈTE ===
+function initializeCompleteNotificationSystem() {
+  // 1. Demander les permissions
+  requestNotificationPermission();
+  
+  // 2. Configurer Firebase Messaging
+  setupFirebaseMessaging();
+  
+  // 3. Lancer les écouteurs temps réel
+  setupRealTimeBackgroundNotifications();
+  
+  // 4. Vérifier périodiquement
+  setInterval(checkForNewData, 5 * 60 * 1000); // Toutes les 5 minutes
+  
+  // 5. Vérifier au retour en ligne
+  window.addEventListener('online', () => {
+    checkForNewData();
+    setupRealTimeBackgroundNotifications();
   });
 }
 
-// Script de test (optionnel)
-const debugButton = document.createElement('button');
-debugButton.innerHTML = '🐛 Debug SW';
-debugButton.style.cssText = `
-  position: fixed;
-  bottom: 60px;
-  left: 10px;
-  z-index: 9999;
-  padding: 8px 12px;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-`;
-debugButton.onclick = debugServiceWorker;
-document.body.appendChild(debugButton);
-</script>
-
-
+// Appeler cette fonction après la connexion
+// Dans onAuthStateChanged, après currentParent = {...}
+initializeCompleteNotificationSystem();</script>
 </body>
 </html>   
